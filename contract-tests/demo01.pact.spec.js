@@ -1,19 +1,19 @@
 const path = require("path");
 const {
-  PactV4,
+  PactV3,
   MatchersV3,
   SpecificationVersion,
 } = require("@pact-foundation/pact");
+const { eachLike, like } = MatchersV3;
 const { getUser } = require("./node_modules/shared/api");
 
 describe("Pact contract test between frontend and backend", () => {
-  const provider = new PactV4({
+  const provider = new PactV3({
     consumer: "frontend",
     provider: "backend",
     dir: path.resolve(process.cwd(), "pacts"),
     log: path.resolve(process.cwd(), "logs", "pact.log"),
     logLevel: "info",
-    spec: SpecificationVersion.SPECIFICATION_VERSION_V4,
   });
 
   const user1 = { id: 1, name: "Somkiat Pui" };
@@ -22,17 +22,27 @@ describe("Pact contract test between frontend and backend", () => {
 
   describe("when a call to the API is made to get user by id", () => {
     it("should receive the user details from the API", async () => {
-      const p = provider
-        .addInteraction()
-        .given("I have a user")
-        .uponReceiving("a request for user with id 1")
-        .withRequest("GET", "/users/1")
-        .willRespondWith(200, (builder) => {
-          builder.headers({ "Content-Type": "application/json" });
-          builder.jsonBody(SUCCESS_EXPECTED_BODY);
-        });
+      // set up Pact interactions
+      await provider.addInteraction({
+        states: [{ description: "user exist" }],
+        uponReceiving: "get user by id",
+        withRequest: {
+          method: "GET",
+          path: "/users/1",
+        },
+        willRespondWith: {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          body: like({
+            id: 1,
+            name: "Somkiat Pui",
+          }),
+        },
+      });
 
-      return p.executeTest(async (mockserver) => {
+      await provider.executeTest(async (mockserver) => {
         process.env.BACKEND_URL = mockserver.url;
         const user = await getUser(1);
         expect(user).toEqual({ id: 1, name: "Somkiat Pui" });
@@ -40,21 +50,30 @@ describe("Pact contract test between frontend and backend", () => {
     });
 
     it("should receive user not found message from the API", async () => {
-        const p = provider
-          .addInteraction()
-          .given("I not have a user in service")
-          .uponReceiving("a request for user with id 2")
-          .withRequest("GET", "/users/2")
-          .willRespondWith(404, (builder) => {
-            builder.headers({ "Content-Type": "application/json" });
-            builder.jsonBody(NOTFOUND_EXPECTED_BODY);
-          });
-  
-        return p.executeTest(async (mockserver) => {
-          process.env.BACKEND_URL = mockserver.url;
-          const user = await getUser(2);
-          expect(user).toEqual({ message: "User not found"});
-        });
+      // set up Pact interactions
+      await provider.addInteraction({
+        states: [{ description: "user not exist in system" }],
+        uponReceiving: "get user by id",
+        withRequest: {
+          method: "GET",
+          path: "/users/2",
+        },
+        willRespondWith: {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          body: like({
+            message: "User not found",
+          }),
+        },
       });
+
+      await provider.executeTest(async (mockserver) => {
+        process.env.BACKEND_URL = mockserver.url;
+        const user = await getUser(2);
+        expect(user).toEqual({ message: "User not found" });
+      });
+    });
   });
 });
