@@ -109,6 +109,7 @@ services:
 
 Start
 ```
+$cd contract-tests
 $docker compose up -d
 $docker compose ps
 ```
