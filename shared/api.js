@@ -7,8 +7,7 @@ const getUser = async (id) => {
     const response = await axios.get(`${url}/users/${id}`);
     return response.data;
   } catch (error) {
-    // console.log(error);
-    throw new Error(`API request failed${error}`);
+    return error.response.data;
   }
 };
 
