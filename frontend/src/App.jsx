@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getUser } from './api';
+import getUser from '../node_modules/shared/src/api';
 
 function App() {
   const [user, setUser] = useState(null);

@@ -1,7 +1,10 @@
-const axios = require('axios');
+'use strict';
+
+var axios = require('axios');
 
 const getUser = async (id) => {
   // Get URL from environment variable
+  // const url = process.env.BACKEND_URL || 'http://localhost:3000';
   const url = process.env.BACKEND_URL || 'http://localhost:3000';
   try {
     const response = await axios.get(`${url}/users/${id}`);
@@ -11,6 +14,4 @@ const getUser = async (id) => {
   }
 };
 
-module.exports = {
-  getUser
-};
+module.exports = getUser;

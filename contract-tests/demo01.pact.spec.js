@@ -5,7 +5,7 @@ const {
   SpecificationVersion,
 } = require("@pact-foundation/pact");
 const { eachLike, like } = MatchersV3;
-const { getUser } = require("./node_modules/shared/api");
+const getUser  = require("./node_modules/shared/dist/api");
 
 describe("Pact contract test between frontend and backend", () => {
   const provider = new PactV3({
