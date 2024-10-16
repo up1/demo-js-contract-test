@@ -2,7 +2,11 @@
   "name": "ui-test",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start": "nyc next dev",
+    "test": "playwright test",
+    "pretest": "rm -rf .next/ coverage/ .nyc_output/"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
