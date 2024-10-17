@@ -120,7 +120,7 @@ Access to server
   * password=pact_workshop
 
 ### 4.2 Publish contract file to server
-* Install [Pact Broker CLI](Install Pact Broker CLI)
+* Install [Pact Broker CLI](https://github.com/pact-foundation/pact-ruby-standalone)
   * Required [Ruby](https://www.ruby-lang.org/en/)
 ```
 $pact-broker publish ./pacts --consumer-app-version 1.0 --broker-base-url http://localhost:9292 --broker-username pact_workshop --broker-password pact_workshop
